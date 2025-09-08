@@ -1,0 +1,77 @@
+/* 패널 위치: 좌측 상단 */
+#nmw-exporter-root {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  z-index: 2147483647;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", sans-serif;
+}
+#nmw-exporter-root.nmw-hidden { display: none !important; }
+
+#nmw-exporter-root .nmw-card {
+  background: #111827;
+  color: #e5e7eb;
+  border: 1px solid #374151;
+  border-radius: 14px;
+  padding: 12px;
+  box-shadow: 0 10px 24px rgba(0,0,0,.35);
+  min-width: 220px;
+  max-width: 420px;
+}
+
+#nmw-exporter-root .nmw-title {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+#nmw-exporter-root .nmw-btn {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  margin: 6px 0;
+  border-radius: 10px;
+  border: 1px solid #4b5563;
+  background: #1f2937;
+  color: #e5e7eb;
+  cursor: pointer;
+}
+#nmw-exporter-root .nmw-btn:hover { background: #374151; }
+#nmw-exporter-root .nmw-btn.nmw-secondary { background: #0b1220; color: #9ca3af; }
+
+#nmw-exporter-root .nmw-handle {
+  position: absolute;
+  right: -6px;
+  bottom: -6px;
+  background: #111827;
+  color: #9ca3af;
+  font-size: 12px;
+  padding: 4px 6px;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  cursor: move;
+  user-select: none;
+}
+
+body.nmw-dragging,
+body.nmw-dragging * {
+  user-select: none !important;
+  cursor: grabbing !important;
+}
+
+/* 미니(열기) 버튼 */
+#nmw-mini {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  z-index: 2147483647;
+  border: 1px solid #374151;
+  background: #0b1220;
+  color: #e5e7eb;
+  padding: 6px 12px;
+  border-radius: 999px; /* 캡슐 */
+  font-size: 12px;
+  box-shadow: 0 6px 16px rgba(0,0,0,.35);
+  cursor: pointer;
+}
+#nmw-mini:hover { background: #111827; }

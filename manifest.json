@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "NamuWiki HTML Tag Exporter",
+  "description": "나무위키 문서의 본문(div.Ye3tUbwV JztYnNb7)을 태그 단위로 추출하여 TXT/PDF로 저장합니다.",
+  "version": "1.1.0",
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  },
+  "permissions": ["downloads", "activeTab", "scripting"],
+  "host_permissions": ["https://namu.wiki/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://namu.wiki/w/*"],
+      "js": ["content.js"],
+      "css": ["ui.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": { "default_title": "NamuWiki Exporter" }
+}
