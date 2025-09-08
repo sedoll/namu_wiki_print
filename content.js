@@ -9,7 +9,14 @@
     showClose: false,      // 닫기 버튼을 숨김(원하면 true)
     miniLabel: '열기',      // 미니 버튼 라벨
     panelTitle: 'NamuWiki Exporter',
-    targetSelector: 'div.Ye3tUbwV.JztYnNb7'
+
+    // ✅ 우선순위 선택자 목록 (위에서부터 시도)
+    targetSelectors: [
+      'div.Ye3tUbwV.JztYnNb7',
+      'article.Ye3tUbwV.JztYnNb7',
+      'article',
+      'main'
+    ]
   };
 
   const $ = (sel, root = document) => root.querySelector(sel);
@@ -27,6 +34,15 @@
   function makeFilename(ext = 'txt') {
     const pathPart = decodeURIComponent(location.pathname.replace(/\/+$/, '').split('/').pop() || 'namuwiki');
     return `namuwiki_${pathPart}_${nowStamp()}.${ext}`;
+  }
+
+  // ✅ 대상 컨테이너 탐색 (어떤 선택자가 매칭됐는지 함께 반환)
+  function getTargetContainer() {
+    for (const sel of CONFIG.targetSelectors) {
+      const el = document.querySelector(sel);
+      if (el) return { el, matchedSelector: sel };
+    }
+    return { el: null, matchedSelector: null };
   }
 
   // 태그 단위 직렬화
@@ -68,8 +84,11 @@
         }
       }
     }
+    return items;
+  }
 
-    let txt = `URL: ${location.href}\nTITLE: ${document.title}\nEXTRACTED_AT: ${new Date().toISOString()}\nSELECTOR: ${CONFIG.targetSelector}\n\n`;
+  function buildTxt(items, selectorUsed) {
+    let txt = `URL: ${location.href}\nTITLE: ${document.title}\nEXTRACTED_AT: ${new Date().toISOString()}\nSELECTOR_USED: ${selectorUsed || '(none)'}\n\n`;
     for (const it of items) {
       if (it.type === 'text') {
         txt += `[text in <${it.tag}>] ${it.text}\n`;
@@ -85,7 +104,7 @@
       }
     }
     txt += `\n----- JSON BEGIN -----\n` + JSON.stringify(items, null, 2) + `\n----- JSON END -----\n`;
-    return { txt, json: items };
+    return txt;
   }
 
   function makeBlobDownload(filename, mime, data) {
@@ -194,18 +213,20 @@
 
     // 동작 바인딩
     $('#nmw-export-txt')?.addEventListener('click', async () => {
-      const container = document.querySelector(CONFIG.targetSelector);
-      if (!container) return alert(`대상 컨테이너(${CONFIG.targetSelector})를 찾을 수 없습니다.`);
+      const { el: container, matchedSelector } = getTargetContainer();
+      if (!container) return alert(`대상 컨테이너를 찾을 수 없습니다.\n시도한 선택자: ${CONFIG.targetSelectors.join(', ')}`);
       const cloned = container.cloneNode(true);
       $$('img', cloned).forEach((img) => img.setAttribute('src', absolutizeUrl(img.getAttribute('src') || '')));
       $$('a', cloned).forEach((a) => a.setAttribute('href', absolutizeUrl(a.getAttribute('href') || '')));
-      const { txt } = serializeTagwise(cloned);
+
+      const items = serializeTagwise(cloned);
+      const txt = buildTxt(items, matchedSelector);
       makeBlobDownload(makeFilename('txt'), 'text/plain;charset=utf-8', txt);
     });
 
     $('#nmw-export-pdf')?.addEventListener('click', async () => {
-      const container = document.querySelector(CONFIG.targetSelector);
-      if (!container) return alert(`대상 컨테이너(${CONFIG.targetSelector})를 찾을 수 없습니다.`);
+      const { el: container } = getTargetContainer();
+      if (!container) return alert(`대상 컨테이너를 찾을 수 없습니다.\n시도한 선택자: ${CONFIG.targetSelectors.join(', ')}`);
       printSectionInPlace(container);
     });
 
